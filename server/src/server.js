@@ -1,15 +1,15 @@
-const app = require('./app');
-const http = require('http');
-const socketIo = require('socket.io');
 const mongoose = require('mongoose');
-const logger = require('./config/logger');
+const http = require('http');
+const app = require('./app');
 const config = require('./config/config');
+const logger = require('./config/logger');
+const socket = require('./socket');
 
 // Create HTTP server
 const server = http.createServer(app);
 
-// Initialize Socket.io
-const io = socketIo(server, {
+// Set up Socket.io
+const io = require('socket.io')(server, {
   cors: {
     origin: config.corsOrigin,
     methods: ['GET', 'POST'],
@@ -17,36 +17,53 @@ const io = socketIo(server, {
   }
 });
 
+// Initialize socket handlers
+const socketHandler = socket(io);
+
+// Make socket handler available to the app
+app.set('socketHandler', socketHandler);
+
+// Exit handler
+const exitHandler = () => {
+  if (server) {
+    server.close(() => {
+      logger.info('Server closed');
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+};
+
+// Unexpected error handler
+const unexpectedErrorHandler = (error) => {
+  logger.error(error);
+  exitHandler();
+};
+
 // Connect to MongoDB
 mongoose.connect(config.mongoose.url, config.mongoose.options)
   .then(() => {
     logger.info('Connected to MongoDB');
     
-    // Initialize socket connection
-    require('./socket')(io);
-    
-    // Start the server
+    // Start server
     server.listen(config.port, () => {
-      logger.info(`Server running on port ${config.port}`);
+      logger.info(`Server listening on port ${config.port}`);
     });
   })
   .catch((error) => {
-    logger.error('Failed to connect to MongoDB', error);
+    logger.error('Error connecting to MongoDB', error);
     process.exit(1);
   });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  logger.error('UNHANDLED REJECTION! Shutting down...', err);
-  server.close(() => {
-    process.exit(1);
-  });
-});
+// Handle unexpected errors
+process.on('uncaughtException', unexpectedErrorHandler);
+process.on('unhandledRejection', unexpectedErrorHandler);
 
 // Handle SIGTERM signal
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM RECEIVED. Shutting down gracefully');
-  server.close(() => {
-    logger.info('Process terminated!');
-  });
+  logger.info('SIGTERM received');
+  if (server) {
+    server.close();
+  }
 });
