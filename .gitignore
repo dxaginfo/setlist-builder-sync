@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp/
+.pnp.js
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build directories
+/build
+/dist
+/client/build
+/server/dist
+
+# Cache
+.cache/
+.npm/
+
+# Logs
+logs
+*.log
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+/coverage
+
+# Production
+/client/build
+
+# AWS
+.aws/
+
+# Media files uploaded for development
+/uploads
+/server/uploads
+
+# Redis
+dump.rdb
