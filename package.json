@@ -1,0 +1,35 @@
+{
+  "name": "setlist-builder-sync",
+  "version": "1.0.0",
+  "description": "A comprehensive web application for musicians to create, share, and synchronize setlists across devices and band members.",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm start",
+    "client": "cd client && npm start",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "build": "cd client && npm run build",
+    "deploy": "cd client && npm run build && cd ../server && npm run start:prod",
+    "test": "concurrently \"cd server && npm test\" \"cd client && npm test\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dxaginfo/setlist-builder-sync.git"
+  },
+  "keywords": [
+    "music",
+    "setlist",
+    "band",
+    "collaboration",
+    "sync",
+    "real-time"
+  ],
+  "author": "Setlist Builder Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dxaginfo/setlist-builder-sync/issues"
+  },
+  "homepage": "https://github.com/dxaginfo/setlist-builder-sync#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
